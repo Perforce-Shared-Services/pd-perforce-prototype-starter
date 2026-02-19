@@ -11,7 +11,6 @@
   },
   "references": [
     { "path": "./packages/shared" },
-    { "path": "./apps/backend" },
     { "path": "./apps/frontend" }
   ],
   "exclude": ["node_modules", "**/dist/**"]

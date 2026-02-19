@@ -7,6 +7,7 @@ import {
   FileText,
   Eye,
   Puzzle,
+  BookMarked,
   Info,
 } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
@@ -18,6 +19,7 @@ const navItems = [
   { to: "/form", icon: FileText, label: "Form" },
   { to: "/detail", icon: Eye, label: "Detail View" },
   { to: "/components", icon: Puzzle, label: "Components" },
+  { to: "/context-system", icon: BookMarked, label: "Context System" },
 ];
 
 export default function Sidebar() {

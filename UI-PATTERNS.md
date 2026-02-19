@@ -5,10 +5,10 @@
 ## Table of Contents
 
 1. [Design Token Reference](#1-design-token-reference)
-2. [Component Usage](#2-component-usage)
+2. [Component Usage](#2-component-usage) — includes [Component Selection Guide](#component-selection-guide)
 3. [Layout Patterns](#3-layout-patterns)
 4. [Page Patterns](#4-page-patterns) *(stubs)*
-5. [Interaction Patterns](#5-interaction-patterns) *(stubs)*
+5. [Interaction Patterns](#5-interaction-patterns)
 6. [Utilities & Conventions](#6-utilities--conventions)
 7. [Appendix: Pattern Template](#appendix-pattern-template)
 
@@ -315,25 +315,50 @@ import { Badge } from "@/components/ui/badge";
 
 | Prop | Values | Default |
 |------|--------|---------|
-| `variant` | `success`, `warning`, `danger`, `info`, `neutral` | `neutral` |
-| `size` | `sm`, `md` | `md` |
-| `dot` | `boolean` | — |
+| `variant` | `filled`, `tint`, `outline`, `subtle` | `tint` |
+| `color` | `brand`, `success`, `warning`, `danger`, `blue`, `dark`, `gray` | `gray` |
+| `size` | `sm`, `md`, `lg`, `xl` | `md` |
+| `shape` | `circular`, `rounded`, `square` | `rounded` |
 
-Map badge variants to semantic meaning:
+**Variant styles**:
+- **`filled`** — Solid background, white text. Highest contrast.
+- **`tint`** — Light tinted background, colored text. Default for most status badges.
+- **`outline`** — Transparent background, colored border and text.
+- **`subtle`** — Minimal background, used internally by MessageBar for icons.
 
-| Variant | Use for |
-|---------|---------|
+**Color mapping**:
+
+| Color | Use for |
+|-------|---------|
 | `success` | Completed, active, healthy, connected |
 | `warning` | Pending, degraded, needs attention |
 | `danger` | Failed, error, disconnected, critical |
-| `info` | Informational labels, new, beta |
-| `neutral` | Default labels, categories, metadata |
+| `blue` | Informational, new, beta |
+| `brand` | Brand-colored highlights |
+| `dark` | High-contrast neutral labels |
+| `gray` | Default labels, categories, metadata |
 
 ```tsx
-<Badge variant="success" dot>Active</Badge>
-<Badge variant="danger" size="sm">Failed</Badge>
-<Badge variant="neutral">v2.1.0</Badge>
+// Status badges (tint variant is the default for status indicators)
+<Badge variant="tint" color="success" shape="circular" size="sm">Active</Badge>
+<Badge variant="tint" color="danger" shape="circular" size="sm">Failed</Badge>
+<Badge variant="tint" color="gray" shape="circular" size="sm">v2.1.0</Badge>
+
+// Filled for high emphasis
+<Badge variant="filled" color="brand">New</Badge>
+
+// Outline for subtle inline labels
+<Badge variant="outline" color="blue">Beta</Badge>
 ```
+
+**Do**:
+- Use `tint` + `circular` for status indicators in tables and cards
+- Use `filled` sparingly for high-emphasis labels
+- Match `color` to semantic meaning, not visual preference
+
+**Don't**:
+- Don't use `filled` for every badge — it's visually heavy
+- Don't mix badge styles within the same visual context
 
 ### Separator
 
@@ -351,6 +376,71 @@ import { Separator } from "@/components/ui/separator";
 
 Uses `bg-neutral-stroke-2-rest` for the line color.
 
+> **Note**: Force UI also provides a `divider` registry component that extends Separator with labeled dividers (e.g., "OR" between sections). Install from registry when needed.
+
+### MessageBar
+
+**Source**: `src/components/ui/message-bar.tsx`
+
+```tsx
+import { MessageBar } from "@/components/ui/message-bar";
+```
+
+| Prop | Values | Default |
+|------|--------|---------|
+| `variant` | `info`, `success`, `warning`, `danger` | `info` |
+| `isFullPage` | `boolean` | `false` |
+| `onDismiss` | `() => void` | — |
+| `isOpen` | `boolean` (controlled) | — |
+
+Compound component with sub-components:
+
+- `MessageBar.Title` — Bold inline title text
+- `MessageBar.Description` — Inline description text
+- `MessageBar.Link` — Inline hyperlink
+- `MessageBar.Actions` — Action button container
+- `MessageBar.Action` — Tertiary button (pre-styled)
+- `MessageBar.Dismiss` — Close button with animated exit
+
+Each variant automatically provides a matching icon and uses Force UI semantic status tokens (`status-informational-*`, `status-success-*`, etc.).
+
+```tsx
+// Informational banner
+<MessageBar variant="info">
+  <MessageBar.Title>Heads up!</MessageBar.Title>
+  <MessageBar.Description>
+    You can add components to your app using the CLI.
+  </MessageBar.Description>
+</MessageBar>
+
+// Dismissable error with action
+<MessageBar variant="danger" onDismiss={() => clearError()}>
+  <MessageBar.Title>Sync failed.</MessageBar.Title>
+  <MessageBar.Description>Unable to reach the server.</MessageBar.Description>
+  <MessageBar.Actions>
+    <MessageBar.Action onClick={retry}>Retry</MessageBar.Action>
+  </MessageBar.Actions>
+  <MessageBar.Dismiss />
+</MessageBar>
+
+// Full-page banner (no border-radius, edge-to-edge)
+<MessageBar variant="warning" isFullPage>
+  <MessageBar.Title>Maintenance scheduled.</MessageBar.Title>
+  <MessageBar.Description>The system will be down at 2:00 AM UTC.</MessageBar.Description>
+</MessageBar>
+```
+
+**Do**:
+
+- Use MessageBar for persistent inline status banners (page-level or section-level)
+- Use the `variant` prop — don't manually apply status colors
+- Include `MessageBar.Dismiss` when the user should be able to close the banner
+
+**Don't**:
+
+- Don't use MessageBar for transient feedback — use Toast (sonner) instead
+- Don't use the basic `Alert` component for status banners — it lacks Force UI semantic styling
+
 ### Adding New Components
 
 Force UI components are installed from the local registry. The Force UI docs server must be running:
@@ -364,6 +454,60 @@ npx shadcn@latest add http://localhost:4321/react/r/components/<component-name>.
 ```
 
 After installing, update this document with the new component's usage guide.
+
+### Component Selection Guide
+
+Force UI provides multiple components for similar use cases. Use this guide to pick the right one.
+
+#### Feedback & Status: MessageBar vs Toast vs Alert
+
+| Need | Use | Why |
+|------|-----|-----|
+| Persistent inline status banner | `MessageBar` | Semantic variants (`info`/`success`/`warning`/`danger`), built-in icons, dismiss support |
+| Transient action feedback | `sonner` (Toast) | Ephemeral pop-up, auto-dismisses, imperative API (`toast.success(...)`) |
+| Static inline callout (rare) | `Alert` | Only `default`/`destructive` variants, no Force UI status tokens — prefer MessageBar |
+
+**Rule of thumb**: If the user needs to acknowledge it or it stays visible, use `MessageBar`. If it's fire-and-forget feedback, use `toast`.
+
+#### Overlays: Dialog vs AlertDialog vs Sheet vs Drawer
+
+| Need | Use | Why |
+|------|-----|-----|
+| General modal (form, detail view) | `Dialog` | Dismissable via overlay click or Escape, size variants (`sm`–`8xl`) |
+| Destructive confirmation | `AlertDialog` | Traps focus, no accidental dismiss — forces explicit Cancel/Confirm |
+| Side panel (filters, settings) | `Sheet` | Slides from edge (`left`/`right`/`top`/`bottom`), stays open alongside page |
+| Touch-friendly side/bottom panel | `Drawer` | Same as Sheet but with drag-to-dismiss gesture support |
+
+#### Selection: Select vs Combobox vs MultiSelect
+
+| Need | Use | Why |
+|------|-----|-----|
+| Single choice, short list | `Select` | Simple dropdown, no search, keyboard nav only |
+| Single choice, searchable | `ComboboxDropdownMenu` | Inline text filter, supports grouping (install from registry) |
+| Multiple choices, searchable | `MultipleSelector` | Tag-style chips, async search, creatable items (install from registry) |
+
+#### Form Layout: Input + Field + Textarea
+
+| Need | Use | Why |
+|------|-----|-----|
+| Single-line text entry | `Input` | Variants: `outline`/`filledDarker`/`filledLighter`, icon slots |
+| Multi-line text entry | `Textarea` | Auto-grows to content via `field-sizing-content` |
+| Label + error wrapper | `Field` | Layout scaffold — wrap any input in `Field` > `FieldLabel` > `FieldError` (install from registry) |
+
+#### Dividers: Separator vs Divider
+
+| Need | Use | Why |
+|------|-----|-----|
+| Simple line divider | `Separator` | Bare structural line, no label |
+| Labeled divider ("OR", "Today") | `Divider` | Renders text between two lines, supports alignment (install from registry) |
+
+#### Metrics: Badge vs CalloutCard vs StatCard
+
+| Need | Use | Why |
+|------|-----|-----|
+| Inline status label | `Badge` | Small, inline — status, count, category |
+| Dashboard KPI tile | `CalloutCard` | Centered label + bold value card (install from registry) |
+| Dashboard stat with trend | `StatCard` | Custom component with icon, value, trend indicator |
 
 ---
 
@@ -542,33 +686,126 @@ Token hints: `text-neutral-foreground-3-rest` for loading text. Skeleton uses `n
 
 *Document when first implemented.*
 
-Inline banner for page-level errors with dismiss action.
+Use `MessageBar variant="danger"` with `MessageBar.Dismiss` for page-level error banners. See [MessageBar](#messagebar) in Component Usage for full API.
 
-Token hints: `bg-status-danger-background-1-rest`, `text-status-danger-foreground-1-rest` for the banner. Dismiss button as tertiary text link.
+Token hints: MessageBar handles status tokens automatically via the `variant` prop — no manual token application needed.
 
 ---
 
 ## 5. Interaction Patterns
 
-> These are stub sections. Document each pattern fully when it is first implemented in the project. Use the [Pattern Template](#appendix-pattern-template) format.
-
 ### Modals / Dialogs
 
-*Document when first implemented.*
+**Source**: `src/components/ui/dialog.tsx`, `src/components/ui/alert-dialog.tsx`
 
-Install the `dialog` component from the Force UI registry. Use for confirmation prompts (destructive actions) and short form flows.
+Two modal components are installed. Choose based on dismissibility:
+
+**Dialog** — General-purpose modal. Closes on overlay click or Escape.
+
+```tsx
+import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+
+<Dialog>
+  <DialogTrigger asChild>
+    <Button variant="primary" color="default">Open Dialog</Button>
+  </DialogTrigger>
+  <DialogContent size="md">
+    <DialogHeader>
+      <DialogTitle>Edit Profile</DialogTitle>
+      <DialogDescription>Make changes to your profile here.</DialogDescription>
+    </DialogHeader>
+    {/* Form content */}
+    <DialogFooter>
+      <Button variant="secondary" color="default">Cancel</Button>
+      <Button variant="primary" color="confirm">Save</Button>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
+```
+
+| Prop (`DialogContent`) | Values | Default |
+|------------------------|--------|---------|
+| `size` | `sm`, `md`, `lg`, `xl`, `2xl`–`8xl` | `2xl` |
+
+**AlertDialog** — Destructive confirmation. No accidental dismiss — forces explicit choice.
+
+```tsx
+import { AlertDialog, AlertDialogTrigger, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogAction, AlertDialogCancel } from "@/components/ui/alert-dialog";
+
+<AlertDialog>
+  <AlertDialogTrigger asChild>
+    <Button variant="primary" color="danger">Delete</Button>
+  </AlertDialogTrigger>
+  <AlertDialogContent>
+    <AlertDialogHeader>
+      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+      <AlertDialogDescription>This action cannot be undone.</AlertDialogDescription>
+    </AlertDialogHeader>
+    <AlertDialogFooter>
+      <AlertDialogCancel>Cancel</AlertDialogCancel>
+      <AlertDialogAction variant="primary" color="danger">Delete</AlertDialogAction>
+    </AlertDialogFooter>
+  </AlertDialogContent>
+</AlertDialog>
+```
+
+**Do**:
+
+- Use `Dialog` for forms, detail views, and dismissible modals
+- Use `AlertDialog` for destructive or irreversible confirmations only
+- Use `size` prop on `DialogContent` to control width
+
+**Don't**:
+
+- Don't use `AlertDialog` for non-destructive confirmations — it blocks Escape/overlay dismiss
+- Don't nest dialogs — use separate trigger flows instead
 
 ### Toast Notifications
 
-*Document when first implemented.*
+**Source**: `src/components/ui/sonner.tsx`
 
-Install the `sonner` / `toast` component from the Force UI registry. Use for transient feedback after actions (save success, delete confirmation, error alerts).
+Imperative API for transient feedback. Requires `<Toaster />` in the app root (already configured in `App.tsx`).
+
+```tsx
+import { toast } from "@/components/ui/sonner";
+
+// Basic variants
+toast.success("Settings saved", { description: "Your changes have been saved." });
+toast.error("Upload failed", { description: "File size exceeds the limit." });
+toast.info("New version available");
+toast.warning("Connection unstable");
+
+// Promise-based (shows loading → success/error automatically)
+toast.promise(saveData(), {
+  loading: "Saving...",
+  success: "Saved successfully",
+  error: "Failed to save",
+});
+```
+
+| Variant | Use for |
+|---------|---------|
+| `success` | Completed actions: save, create, delete confirmation |
+| `error` | Failed actions: network error, validation failure |
+| `info` | Informational: new feature, version update |
+| `warning` | Caution: approaching limit, degraded service |
+
+**Do**:
+
+- Use toast for transient, non-blocking feedback after user actions
+- Use `toast.promise()` for async operations to show loading → result
+- Keep messages short (title + optional one-line description)
+
+**Don't**:
+
+- Don't use toast for persistent status — use `MessageBar` instead
+- Don't use toast for errors that require user action — use `MessageBar` with actions
 
 ### Forms
 
 *Document when first implemented.*
 
-Document the standard form structure: label + input + error message, submission handling, disabled states during async operations, and keyboard interaction (Enter to submit, Shift+Enter for newline in textareas).
+Document the standard form structure: label + input + error message, submission handling, disabled states during async operations, and keyboard interaction (Enter to submit, Shift+Enter for newline in textareas). Consider installing the `field` component from the registry for structured label/error layout.
 
 ---
 
@@ -644,7 +881,7 @@ Use this template when adding a new fully-documented pattern:
 ````markdown
 ### Pattern Name
 
-**Used in**: frontend | backend | all apps
+**Used in**: frontend
 
 Brief description of when and why to use this pattern.
 
