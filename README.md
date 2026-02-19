@@ -2,17 +2,36 @@
 
 A ready-to-go starter template for building Perforce coded prototypes. Clone, install, and start building — Force UI design system and all tooling pre-configured.
 
-## Quickstart
+## Creating a New Prototype
+
+This repo is a [GitHub Template Repository](https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template). Use it to create a fresh repo for each new prototype — no fork needed, clean git history.
+
+### Option A: GitHub Web UI
+
+1. Go to [**Perforce-Shared-Services/pd-perforce-prototype-starter**](https://github.com/Perforce-Shared-Services/pd-perforce-prototype-starter)
+2. Click the green **"Use this template"** button > **"Create a new repository"**
+3. Choose the owner (e.g., `Perforce-Shared-Services`), name your repo (e.g., `pd-my-prototype`), and set visibility
+4. Click **"Create repository"**
+5. Clone your new repo and start working:
 
 ```bash
-# 1. Clone the repo (or use it as a template)
-git clone <repo-url> my-prototype
-cd my-prototype
-
-# 2. Install dependencies
+git clone https://github.com/Perforce-Shared-Services/pd-my-prototype.git
+cd pd-my-prototype
 pnpm install
+pnpm dev
+```
 
-# 3. Start developing
+### Option B: GitHub CLI
+
+```bash
+# Create a new repo from the template
+gh repo create Perforce-Shared-Services/pd-my-prototype \
+  --template Perforce-Shared-Services/pd-perforce-prototype-starter \
+  --public \
+  --clone
+
+cd pd-my-prototype
+pnpm install
 pnpm dev
 ```
 
@@ -35,17 +54,17 @@ Open http://localhost:5173 — you should see a working app with Force UI compon
 | **Code Quality** | Biome (formatting + linting), TypeScript strict mode |
 | **AI Tooling** | Claude Code skills, rules, and context management system |
 
-## Starting a New Prototype
+## Setting Up Your Prototype
 
-### 1. Fork or Clone
+Once you've created your repo from the template, customize these files for your project:
 
-Use this repo as a GitHub template or clone it directly. Then update these files for your project:
-
+- **`CLAUDE.md`** — Update the top section with your prototype's name, description, and key workflows
 - **`project-goal.md`** — Replace with your prototype's vision, scope, and success criteria
 - **`package.json`** — Update the `name` and `description` fields
+- **`README.md`** — Replace this README with one specific to your prototype
 - **`.env.example`** — Add any API keys or service URLs your prototype needs
 
-### 2. Add Force UI Components
+### Add Force UI Components
 
 The Force UI docs site must be running locally to install components from the registry:
 
@@ -60,7 +79,7 @@ npx shadcn@latest add http://localhost:4321/react/r/components/table.json
 
 Components are installed to `apps/frontend/src/components/ui/` and are fully customizable.
 
-### 3. Add Pages
+### Add Pages
 
 Create new pages in `apps/frontend/src/pages/` and wire them up in `App.tsx`:
 
@@ -80,7 +99,7 @@ export function DashboardPage() {
 <Route path="/dashboard" element={<DashboardPage />} />
 ```
 
-### 4. Add State
+### Add State
 
 Create Zustand stores in `apps/frontend/src/stores/`:
 
@@ -175,4 +194,5 @@ See the [Project Context System](CLAUDE.md#project-context-system) section in CL
 
 ## Related
 
-- [Force UI](https://github.com/nicholasgriffintn/force-ui)
+- [Force UI](https://github.com/nicholasgriffintn/force-ui) — Perforce design system
+- [Perforce-Shared-Services](https://github.com/Perforce-Shared-Services) — Org for shared Perforce tooling
