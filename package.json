@@ -1,0 +1,20 @@
+{
+  "name": "perforce-prototype-starter",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Starter template for Perforce prototypes with Force UI design system",
+  "scripts": {
+    "kill-ports": "node scripts/kill-ports.js",
+    "predev": "pnpm kill-ports",
+    "dev": "pnpm --filter @starter/frontend dev",
+    "build": "pnpm --filter @starter/frontend build",
+    "typecheck": "pnpm --filter @starter/frontend typecheck",
+    "lint": "pnpm run --recursive lint",
+    "test": "pnpm run --recursive test"
+  },
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@9.15.0"
+}

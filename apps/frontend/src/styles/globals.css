@@ -1,0 +1,20 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap");
+@import "tailwindcss";
+@import "./force-ui.css";
+
+/* Configure Tailwind dark mode to use .dark class selector */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Base styles */
+body {
+  font-family: var(--font-sans, "Noto Sans", sans-serif);
+  background-color: var(--color-neutral-background-1-rest, #ffffff);
+  color: var(--color-neutral-foreground-1-rest, #242424);
+}
+
+/* Dark mode support */
+.dark body,
+[data-theme="dark"] body {
+  background-color: var(--color-neutral-background-1-rest);
+  color: var(--color-neutral-foreground-1-rest);
+}
