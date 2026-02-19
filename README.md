@@ -194,5 +194,5 @@ See the [Project Context System](CLAUDE.md#project-context-system) section in CL
 
 ## Related
 
-- [Force UI](https://github.com/nicholasgriffintn/force-ui) — Perforce design system
+- [Force UI](https://github.com/Perforce-Shared-Services/force-ui) — Perforce design system
 - [Perforce-Shared-Services](https://github.com/Perforce-Shared-Services) — Org for shared Perforce tooling
