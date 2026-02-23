@@ -1,12 +1,3 @@
----
-paths:
-  - "docs/**/*"
-  - "*.md"
-  - "CLAUDE.md"
-  - "project-goal.md"
-  - "UI-PATTERNS.md"
----
-
 # Context Management System
 
 This project uses a structured context management system. Follow these conventions when working with project documentation.
