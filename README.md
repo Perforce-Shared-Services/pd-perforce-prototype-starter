@@ -56,7 +56,15 @@ Open http://localhost:5173 — you should see a working app with Force UI compon
 
 ## Setting Up Your Prototype
 
-Once you've created your repo from the template, customize these files for your project:
+Once you've created your repo from the template, the fastest way to get oriented is to use the `/project-setup` skill in Claude Code. It will ask you a few questions about what you're building, then automatically update the project documents and create a first implementation plan for you.
+
+```
+/project-setup
+```
+
+This will update `CLAUDE.md`, `project-goal.md`, and create a `docs/plans/` document with a phased roadmap tailored to your prototype.
+
+**Or set up manually** by editing these files yourself:
 
 - **`CLAUDE.md`** — Update the top section with your prototype's name, description, and key workflows
 - **`project-goal.md`** — Replace with your prototype's vision, scope, and success criteria
@@ -165,6 +173,7 @@ This starter includes a context management system designed for working with Clau
 
 | Command | Description |
 |---------|-------------|
+| `/project-setup` | **Start here** — interactive wizard that configures the project docs and creates a first implementation plan |
 | `/context-create <type> <title>` | Create a new context document (decision, research, plan, feedback, architecture) |
 | `/context-list` | List all context documents by category |
 | `/context-briefing` | Get a summary of current project state |
